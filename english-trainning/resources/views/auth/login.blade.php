@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'LexiLearn') — Học từ vựng thông minh</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* ── Reset ───────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* ── CSS Variables ───────────────────────── */
+        :root {
+            --bg: #070d1a;
+            --sur: #0b1624;
+            --card: #101f33;
+            --card2: #152840;
+            --bdr: #1d3050;
+            --bdr2: #244068;
+            --acc: #c8913a;
+            --acc2: #e0aa50;
+            --acc-d: rgba(200, 145, 58, .13);
+            --acc-g: rgba(200, 145, 58, .22);
+            --blue: #4080d0;
+            --blue-d: rgba(64, 128, 208, .13);
+            --grn: #25b87a;
+            --red: #d84040;
+            --txt: #d5e8f8;
+            --txt2: #4e7090;
+            --txt3: #1e3550;
+            --df: 'Playfair Display', Georgia, serif;
+            --bs: 'DM Sans', sans-serif;
+        }
+
+        body {
+            font-family: var(--bs);
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+        }
+
+        /* ── Auth Layout ─────────────────────────── */
+        .auth-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── Left Panel ──────────────────────────── */
+        .auth-left {
+            background: linear-gradient(160deg, #0d1e38 0%, #070d1a 100%);
+            padding: 60px 56px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border-right: 1px solid var(--bdr);
+        }
+
+        .auth-left::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            left: -80px;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(200, 145, 58, .12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .auth-left::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: -60px;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(64, 128, 208, .1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Logo */
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-logo-icon {
+            width: 46px;
+            height: 46px;
+            background: var(--acc-d);
+            border: 1px solid var(--acc-g);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .auth-logo-text {
+            font-family: var(--df);
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--txt);
+        }
+
+        .auth-logo-text span {
+            color: var(--acc);
+        }
+
+        /* Hero text */
+        .auth-hero {
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-hero h1 {
+            font-family: var(--df);
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--txt);
+            margin-bottom: 18px;
+        }
+
+        .auth-hero h1 em {
+            color: var(--acc);
+            font-style: normal;
+        }
+
+        .auth-hero p {
+            color: var(--txt2);
+            font-size: 15px;
+            line-height: 1.65;
+            max-width: 380px;
+        }
+
+        /* Feature list */
+        .auth-features {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-feat {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid var(--bdr);
+            border-radius: 14px;
+            padding: 14px 18px;
+        }
+
+        .auth-feat-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .auth-feat-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--txt);
+            margin-bottom: 2px;
+        }
+
+        .auth-feat-desc {
+            font-size: 11px;
+            color: var(--txt2);
+        }
+
+        /* ── Right Panel ─────────────────────────── */
+        .auth-right {
+            padding: 60px 56px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .auth-form-box {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        /* Tabs */
+        .auth-tabs {
+            display: flex;
+            background: var(--card);
+            border-radius: 14px;
+            border: 1px solid var(--bdr);
+            padding: 4px;
+            margin-bottom: 32px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            border-radius: 11px;
+            border: none;
+            background: none;
+            font-family: var(--bs);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--txt2);
+            cursor: pointer;
+            transition: all .2s;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+
+        .auth-tab.active {
+            background: var(--acc);
+            color: #000;
+        }
+
+        /* Form elements */
+        .auth-form-title {
+            font-family: var(--df);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--txt);
+            margin-bottom: 6px;
+        }
+
+        .auth-form-sub {
+            color: var(--txt2);
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--txt2);
+            margin-bottom: 7px;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--bdr);
+            border-radius: 12px;
+            padding: 13px 16px;
+            color: var(--txt);
+            font-family: var(--bs);
+            font-size: 14px;
+            outline: none;
+            transition: border-color .18s;
+        }
+
+        .form-input:focus {
+            border-color: var(--acc-g);
+        }
+
+        .form-input::placeholder {
+            color: var(--txt3);
+        }
+
+        .form-input.is-invalid {
+            border-color: var(--red);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234e7090' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 38px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .invalid-feedback {
+            color: var(--red);
+            font-size: 11px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .alert-danger {
+            background: rgba(216, 64, 64, .1);
+            border: 1px solid rgba(216, 64, 64, .25);
+            color: var(--red);
+        }
+
+        .alert-success {
+            background: rgba(37, 184, 122, .1);
+            border: 1px solid rgba(37, 184, 122, .25);
+            color: var(--grn);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 22px;
+            border-radius: 12px;
+            font-family: var(--bs);
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all .18s;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--acc);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: var(--acc2);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(200, 145, 58, .25);
+        }
+
+        .btn-primary:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 20px 0;
+            color: var(--txt3);
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--bdr);
+        }
+
+        /* Google button */
+        .btn-google {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 13px;
+            border-radius: 12px;
+            background: var(--card);
+            border: 1px solid var(--bdr);
+            color: var(--txt);
+            font-family: var(--bs);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .18s;
+            text-decoration: none;
+        }
+
+        .btn-google:hover {
+            border-color: var(--bdr2);
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #4285F4;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--sur);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bdr2);
+            border-radius: 3px;
+        }
+
+        /* ── Responsive ──────────────────────────── */
+        @media (max-width: 900px) {
+            .auth-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-left {
+                display: none;
+            }
+
+            .auth-right {
+                padding: 40px 28px;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-right {
+                padding: 28px 18px;
+            }
+
+            .auth-hero h1 {
+                font-size: 32px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    @stack('styles')
+</head>
+
+<body>
+
+    <div class="auth-wrapper">
+
+        {{-- ── Left panel (giữ nguyên trên mọi trang auth) ── --}}
+        <div class="auth-left">
+            <div class="auth-logo">
+                <div class="auth-logo-icon">📖</div>
+                <span class="auth-logo-text">Lexi<span>Learn</span></span>
+            </div>
+
+            <div class="auth-hero">
+                <h1>Học từ vựng<br>theo cách <em>thông minh</em></h1>
+                <p>Phương pháp Spaced Repetition (SM-2) giúp bạn ghi nhớ từ vựng lâu dài với thời gian ôn tập tối thiểu
+                    nhất.</p>
+            </div>
+
+            <div class="auth-features">
+                <div class="auth-feat">
+                    <div class="auth-feat-icon" style="background:var(--acc-d)">🧠</div>
+                    <div>
+                        <div class="auth-feat-title">Spaced Repetition (SM-2)</div>
+                        <div class="auth-feat-desc">Thuật toán lặp lại ngắt quãng khoa học</div>
+                    </div>
+                </div>
+                <div class="auth-feat">
+                    <div class="auth-feat-icon" style="background:var(--blue-d)">🃏</div>
+                    <div>
+                        <div class="auth-feat-title">Flashcard & Context</div>
+                        <div class="auth-feat-desc">Học qua ví dụ, collocation thực tế</div>
+                    </div>
+                </div>
+                <div class="auth-feat">
+                    <div class="auth-feat-icon" style="background:rgba(37,184,122,.13)">📊</div>
+                    <div>
+                        <div class="auth-feat-title">Theo dõi tiến độ</div>
+                        <div class="auth-feat-desc">Dashboard, streak, retention rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── Right panel (nội dung thay đổi theo trang) ── --}}
+        <div class="auth-right">
+            <div class="auth-form-box">
+
+                {{-- Tab điều hướng Login / Register --}}
+                <div class="auth-tabs">
+                    <a href="{{ route('login') }}" class="auth-tab {{ request()->routeIs('login') ? 'active' : '' }}">
+                        Đăng nhập
+                    </a>
+                    <a href="{{ route('register') }}"
+                        class="auth-tab {{ request()->routeIs('register') ? 'active' : '' }}">
+                        Đăng ký
+                    </a>
+                </div>
+
+                {{-- Flash messages --}}
+                @if (session('status'))
+                    <div class="alert alert-success">{{ session('status') }}</div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+
+                {{-- Nội dung form --}}
+                @yield('form')
+
+            </div>
+        </div>
+
+    </div>
+
+    @stack('scripts')
+</body>
+
+</html>
